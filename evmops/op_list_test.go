@@ -23,17 +23,19 @@ import (
 
 func TestListCompleteness(t *testing.T) {
 	for i := 0; i < 256; i++ {
+
 		op := vm.OpCode(i)
 		instr := InstructionSet[i]
+		instrUndefined := strings.Contains(instr.Mnemonic, "__UNDEFINED_INSTRUCTION")
 
 		if strings.Contains(op.String(), "not defined") {
-			if instr.Mnemonic != "__UNDEFINED_INSTRUCTION" {
+			if !instrUndefined {
 				t.Errorf("opcode %d should not be defined but defined as %q", i, instr.Mnemonic)
 			}
 			continue
 		}
 
-		if instr.Mnemonic == "__UNDEFINED_INSTRUCTION" {
+		if instrUndefined {
 			t.Errorf("opcode %d should be defined but not defined, expected %q", i, op.String())
 		}
 	}
