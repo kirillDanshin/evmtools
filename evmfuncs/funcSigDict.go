@@ -60,6 +60,49 @@ type WellKnownFuncDesc struct {
 	methodIDHex string
 }
 
+func (desc *WellKnownFuncDesc) Name() string {
+	return desc.name
+}
+
+func (desc *WellKnownFuncDesc) Description() string {
+	return desc.description
+}
+
+func (desc *WellKnownFuncDesc) Inputs() []FuncParam {
+	return desc.inputs
+}
+
+func (desc *WellKnownFuncDesc) Outputs() []FuncParam {
+	return desc.outputs
+}
+
+func (desc *WellKnownFuncDesc) Effects() Effect {
+	return desc.effects
+}
+
+func (desc *WellKnownFuncDesc) MethodIDHex() string {
+	return desc.methodIDHex
+}
+
+func (desc *WellKnownFuncDesc) MethodID() []byte {
+	mID, err := hex.DecodeString(desc.methodIDHex)
+	if err != nil {
+		sel := desc.name + "("
+		for i, p := range desc.inputs {
+			sel += p.Type
+			if i < len(desc.inputs)-1 {
+				sel += ","
+			}
+		}
+
+		sel += ")"
+
+		return evmtools.MethodID(sel)
+	}
+
+	return mID
+}
+
 func GetWellKnownFuncByMethodID(methodID []byte) (*WellKnownFuncDesc, bool) {
 	mIDHex := hex.EncodeToString(methodID)
 	desc, ok := funcDescriptionByMethodID[mIDHex]
